@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_presence4/app/routes/app_pages.dart';
 
 import 'package:get/get.dart';
 
@@ -11,6 +12,12 @@ class HomeView extends GetView<HomeController> {
       appBar: AppBar(
         title: Text('HomeView'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () => Get.toNamed(Routes.ADD_PEGAWAI),
+            icon: Icon(Icons.person),
+          ),
+        ],
       ),
       body: Center(
         child: Text(
