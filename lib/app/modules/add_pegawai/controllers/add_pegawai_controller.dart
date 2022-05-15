@@ -22,7 +22,6 @@ class AddPegawaiController extends GetxController {
           password: "password",
         );
 
-        // print(userCredential);
         if (userCredential.user != null) {
           String uid = userCredential.user!.uid;
 
@@ -33,7 +32,10 @@ class AddPegawaiController extends GetxController {
             "uid": uid,
             "createAt": DateTime.now().toIso8601String(),
           });
+
+          await userCredential.user!.sendEmailVerification();
         }
+        print(userCredential);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           Get.snackbar(

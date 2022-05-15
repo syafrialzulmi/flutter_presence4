@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_presence4/app/routes/app_pages.dart';
 import 'package:get/get.dart';
@@ -16,17 +15,16 @@ class LoginController extends GetxController {
         UserCredential userCredential = await auth.signInWithEmailAndPassword(
             email: emailC.text, password: passC.text);
 
-        Get.offAllNamed(Routes.HOME);
         if (userCredential.user != null) {
           if (userCredential.user!.emailVerified == true) {
             Get.offAllNamed(Routes.HOME);
+          } else {
+            Get.defaultDialog(
+              title: "Email belum Verifikasi",
+              middleText:
+                  "Kamu belum verifikasi akun ini. Lakukan verifikasi di akun email anda.",
+            );
           }
-        } else {
-          Get.defaultDialog(
-            title: "Email belum Verifikasi",
-            middleText:
-                "Kamu belum verifikasi akun ini. Lakukan verifikasi di akun email anda.",
-          );
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {

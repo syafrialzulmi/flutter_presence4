@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -39,7 +37,9 @@ class LoginView extends GetView<LoginController> {
             height: 20,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              controller.login();
+            },
             child: Text('LOGIN'),
           ),
           TextButton(
