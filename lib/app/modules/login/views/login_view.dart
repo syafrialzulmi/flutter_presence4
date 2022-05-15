@@ -16,6 +16,7 @@ class LoginView extends GetView<LoginController> {
         padding: EdgeInsets.all(20),
         children: [
           TextField(
+            autocorrect: false,
             controller: controller.emailC,
             decoration: InputDecoration(
               labelText: "Email",
@@ -26,6 +27,7 @@ class LoginView extends GetView<LoginController> {
             height: 20,
           ),
           TextField(
+            autocorrect: false,
             controller: controller.passC,
             obscureText: true,
             decoration: InputDecoration(
@@ -36,16 +38,19 @@ class LoginView extends GetView<LoginController> {
           SizedBox(
             height: 20,
           ),
-          ElevatedButton(
-            onPressed: () {
-              controller.login();
-            },
-            child: Text('LOGIN'),
+          Obx(
+            () => ElevatedButton(
+              onPressed: () {
+                if (controller.isLoading.isFalse) {
+                  controller.login();
+                }
+              },
+              child:
+                  Text(controller.isLoading.isFalse ? 'LOGIN' : 'LOADING...'),
+            ),
           ),
           TextButton(
-            onPressed: () {
-              controller.login();
-            },
+            onPressed: () {},
             child: Text('Lupa Password ?'),
           )
         ],
