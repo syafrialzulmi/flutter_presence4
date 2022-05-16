@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AddPegawaiController extends GetxController {
   RxBool isLoading = false.obs;
+  RxBool isLoading2 = false.obs;
 
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -19,6 +20,7 @@ class AddPegawaiController extends GetxController {
   Future<void> prosesAddPegawai() async {
     if (passAdminC.text.isNotEmpty) {
       try {
+        isLoading2.value = true;
         String emailAdmin = auth.currentUser!.email!;
 
         UserCredential userCredentialAdmin =
@@ -55,24 +57,29 @@ class AddPegawaiController extends GetxController {
           Get.snackbar("Berhasil", "Berhasil menambahkan pegawai.");
         }
         isLoading.value = false;
+        isLoading2.value = false;
         // print(userCredential);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           isLoading.value = false;
+          isLoading2.value = false;
           Get.snackbar(
               "Terjadi Kesalahan", "Password yang digunakan terlalu singkat.");
         } else if (e.code == 'email-already-in-use') {
           isLoading.value = false;
+          isLoading2.value = false;
           Get.snackbar("Terjadi Kesalahan",
               "Pegawai sudah ada. Kamu tidak bisa menambahkan pegawai dengan email ini.");
         } else if (e.code == 'wrong-password') {
           isLoading.value = false;
+          isLoading2.value = false;
           Get.snackbar("Terjadi Kesalahan", "Password yang masukkan salah.");
         } else {
           Get.snackbar("Terjadi Kesalahan", "${e.code}");
         }
       } catch (e) {
         isLoading.value = false;
+        isLoading2.value = false;
         Get.snackbar("Terjadi Kesalahan", "Tidak dapat menambahkan pegawai.");
       }
     } else {
@@ -81,7 +88,7 @@ class AddPegawaiController extends GetxController {
     }
   }
 
-  void addPegawai() async {
+  Future<void> addPegawai() async {
     isLoading.value = true;
     if (nipC.text.isNotEmpty &&
         nameC.text.isNotEmpty &&
@@ -111,15 +118,20 @@ class AddPegawaiController extends GetxController {
         ),
         actions: [
           OutlinedButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              isLoading.value = false;
+              Get.back();
+            },
             child: Text("CANCEL"),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              await prosesAddPegawai();
-            },
-            child: Text("ADD PEGAWAI"),
-          ),
+          Obx(() => ElevatedButton(
+                onPressed: () async {
+                  if (isLoading2.isFalse) {
+                    await prosesAddPegawai();
+                  }
+                },
+                child: Text(isLoading2.isFalse ? "ADD PEGAWAI" : "LOADING..."),
+              )),
         ],
       );
     } else {
