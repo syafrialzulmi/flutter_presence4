@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_presence4/app/routes/app_pages.dart';
 
@@ -17,6 +18,14 @@ class HomeView extends GetView<HomeController> {
             onPressed: () => Get.toNamed(Routes.ADD_PEGAWAI),
             icon: Icon(Icons.person),
           ),
+          IconButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+
+              Get.offAllNamed(Routes.LOGIN);
+            },
+            icon: Icon(Icons.logout),
+          )
         ],
       ),
       body: Center(
