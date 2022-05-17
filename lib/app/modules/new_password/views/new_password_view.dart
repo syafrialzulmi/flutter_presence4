@@ -17,6 +17,7 @@ class NewPasswordView extends GetView<NewPasswordController> {
         children: [
           TextField(
             autocorrect: false,
+            obscureText: true,
             controller: controller.newPassC,
             decoration: InputDecoration(
               labelText: "New Password",
