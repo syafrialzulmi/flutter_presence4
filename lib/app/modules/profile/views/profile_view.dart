@@ -31,8 +31,8 @@ class ProfileView extends GetView<ProfileController> {
                     children: [
                       ClipOval(
                         child: Container(
-                          width: 150,
-                          height: 150,
+                          width: 100,
+                          height: 100,
                           child: Image.network(
                             "https://ui-avatars.com/api/?name=${user['nama']}",
                             fit: BoxFit.cover,
@@ -62,12 +62,12 @@ class ProfileView extends GetView<ProfileController> {
                     height: 10,
                   ),
                   ListTile(
-                    onTap: () {},
+                    onTap: () => Get.toNamed(Routes.UPDATE_PROFILE, arguments: user),
                     leading: Icon(Icons.person),
                     title: Text("Update Profile"),
                   ),
                   ListTile(
-                    onTap: () {},
+                    onTap: () => Get.toNamed(Routes.UPDATE_PASSWORD),
                     leading: Icon(Icons.key),
                     title: Text("Update Password"),
                   ),
