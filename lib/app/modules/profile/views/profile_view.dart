@@ -23,6 +23,8 @@ class ProfileView extends GetView<ProfileController> {
             }
             if (snap.hasData) {
               Map<String, dynamic> user = snap.data!.data()!;
+              String defaultImageProfile =
+                  "https://ui-avatars.com/api/?name=${user['nama']}";
               return ListView(
                 padding: EdgeInsets.all(20),
                 children: [
@@ -34,7 +36,11 @@ class ProfileView extends GetView<ProfileController> {
                           width: 100,
                           height: 100,
                           child: Image.network(
-                            "https://ui-avatars.com/api/?name=${user['nama']}",
+                            user['profile'] != null
+                                ? user['profile'] != ""
+                                    ? user['profile']
+                                    : defaultImageProfile
+                                : defaultImageProfile,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -62,7 +68,8 @@ class ProfileView extends GetView<ProfileController> {
                     height: 10,
                   ),
                   ListTile(
-                    onTap: () => Get.toNamed(Routes.UPDATE_PROFILE, arguments: user),
+                    onTap: () =>
+                        Get.toNamed(Routes.UPDATE_PROFILE, arguments: user),
                     leading: Icon(Icons.person),
                     title: Text("Update Profile"),
                   ),

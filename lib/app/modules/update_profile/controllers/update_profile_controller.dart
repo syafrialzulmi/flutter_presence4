@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,6 +11,22 @@ class UpdateProfileController extends GetxController {
   TextEditingController nipC = TextEditingController();
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  final ImagePicker picker = ImagePicker();
+  XFile? image;
+
+  void pickImage() async {
+    image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      print(image!.path);
+      print(image!.name.split(".").last);
+      print(image!.name);
+    } else {
+      print(image);
+    }
+    update();
+  }
 
   Future<void> updatePegawai(String uid) async {
     if (emailC.text.isNotEmpty &&
