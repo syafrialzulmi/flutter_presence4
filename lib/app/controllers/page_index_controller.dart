@@ -5,6 +5,7 @@ import 'package:flutter_presence4/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class PageIndexController extends GetxController {
   RxInt pageIndex = 0.obs;
@@ -21,9 +22,15 @@ class PageIndexController extends GetxController {
         if (dataResponse["error"] != true) {
           Position position = dataResponse["position"];
           // print("${position.latitude}, ${position.longitude}");
-          await updatePosistion(position);
-          Get.snackbar("${dataResponse["message"]}",
-              "${position.latitude}, ${position.longitude}");
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+              position.latitude, position.longitude);
+          // print(placemarks[0]);
+          String address =
+              "${placemarks[0].name}, ${placemarks[0].subLocality}, ${placemarks[0].locality}";
+
+          await updatePosistion(position, address);
+
+          Get.snackbar("${dataResponse["message"]}", "${address }");
         } else {
           Get.snackbar("Terjadi Kesalahan", dataResponse["message"]);
         }
@@ -39,14 +46,15 @@ class PageIndexController extends GetxController {
     }
   }
 
-  Future<void> updatePosistion(Position position) async {
+  Future<void> updatePosistion(Position position, String address) async {
     String uid = auth.currentUser!.uid;
 
     await firestore.collection("pegawai").doc(uid).update({
       "position": {
         "lat": position.latitude,
         "long": position.longitude,
-      }
+      },
+      "address": address,
     });
   }
 

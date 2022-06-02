@@ -34,7 +34,7 @@ class HomeView extends GetView<HomeController> {
                 padding: EdgeInsets.all(20),
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipOval(
                         child: Container(
@@ -64,13 +64,16 @@ class HomeView extends GetView<HomeController> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text(
-                            user['position'] != null
-                                ? "${user['position']}"
-                                : "Belum ada lokasi",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
+                          Container(
+                            width: 250,
+                            child: Text(
+                              user['address'] != null
+                                  ? "${user['address']}"
+                                  : "Belum ada lokasi",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
                             ),
                           ),
                         ],
