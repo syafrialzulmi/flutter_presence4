@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_presence4/app/routes/app_pages.dart';
 import 'package:get/get.dart';
@@ -7,21 +9,25 @@ import 'package:geolocator/geolocator.dart';
 class PageIndexController extends GetxController {
   RxInt pageIndex = 0.obs;
 
+  FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   Future<void> changePage(int i) async {
     // pageIndex.value = i;
     switch (i) {
       case 1:
-        print('ABSENSI');
+        // print('ABSENSI');
         Map<String, dynamic> dataResponse = await determinePosition();
         if (dataResponse["error"] != true) {
           Position position = dataResponse["position"];
-          print("${position.latitude}, ${position.longitude}");
+          // print("${position.latitude}, ${position.longitude}");
+          await updatePosistion(position);
           Get.snackbar("${dataResponse["message"]}",
               "${position.latitude}, ${position.longitude}");
         } else {
           Get.snackbar("Terjadi Kesalahan", dataResponse["message"]);
         }
-        print('SELESAI');
+        // print('SELESAI');
         break;
       case 2:
         pageIndex.value = i;
@@ -31,6 +37,17 @@ class PageIndexController extends GetxController {
         pageIndex.value = i;
         Get.offAllNamed(Routes.HOME);
     }
+  }
+
+  Future<void> updatePosistion(Position position) async {
+    String uid = auth.currentUser!.uid;
+
+    await firestore.collection("pegawai").doc(uid).update({
+      "position": {
+        "lat": position.latitude,
+        "long": position.longitude,
+      }
+    });
   }
 
   Future<Map<String, dynamic>> determinePosition() async {

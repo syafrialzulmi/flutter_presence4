@@ -65,7 +65,9 @@ class HomeView extends GetView<HomeController> {
                             ),
                           ),
                           Text(
-                            "Belum ada lokasi",
+                            user['position'] != null
+                                ? "${user['position']}"
+                                : "Belum ada lokasi",
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[600],
