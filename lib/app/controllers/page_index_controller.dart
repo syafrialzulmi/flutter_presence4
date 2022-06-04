@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 
 class PageIndexController extends GetxController {
   RxInt pageIndex = 0.obs;
@@ -30,7 +31,13 @@ class PageIndexController extends GetxController {
 
           await updatePosistion(position, address);
 
-          Get.snackbar("${dataResponse["message"]}", "${address }");
+          // area jangkauan
+          double distance = Geolocator.distanceBetween(
+              -6.963444, 110.4619592, position.latitude, position.longitude);
+
+          await presensi(position, address, distance);
+
+          Get.snackbar("Berhasil", "Kamu telah berhasil absen");
         } else {
           Get.snackbar("Terjadi Kesalahan", dataResponse["message"]);
         }
@@ -43,6 +50,75 @@ class PageIndexController extends GetxController {
       default:
         pageIndex.value = i;
         Get.offAllNamed(Routes.HOME);
+    }
+  }
+
+  Future<void> presensi(
+      Position position, String address, double distance) async {
+    String uid = auth.currentUser!.uid;
+
+    CollectionReference<Map<String, dynamic>> colPresence =
+        await firestore.collection("pegawai").doc(uid).collection("presence");
+
+    QuerySnapshot<Map<String, dynamic>> snapPresence = await colPresence.get();
+
+    DateTime dateNow = DateTime.now();
+    String todayDocId = DateFormat.yMd().format(dateNow).replaceAll("/", "-");
+
+    String statDistance = "Di luar area";
+    if (distance <= 200) {
+      statDistance = "Di dalam area";
+    }
+
+    if (snapPresence.docs.length == 0) {
+      // belum pernah absen dan set absen masuk
+      await colPresence.doc(todayDocId).set({
+        "date": dateNow.toIso8601String(),
+        "masuk": {
+          "date": dateNow.toIso8601String(),
+          "lat": position.latitude,
+          "long": position.longitude,
+          "address": address,
+          "status": statDistance,
+        }
+      });
+    } else {
+      // sudah pernah absesn, cek hari ini sudah absen masuk /keluar belum..?
+      DocumentSnapshot<Map<String, dynamic>> todayDoc =
+          await colPresence.doc(todayDocId).get();
+
+      if (todayDoc.exists == true) {
+        // absen masuk dan keluar
+        Map<String, dynamic>? dataPresenceToday = await todayDoc.data();
+
+        if (dataPresenceToday?["keluar"] != null) {
+          // sudah absen masuk dan keluar
+          Get.snackbar("Sukses", "Kamu telah absen masuk dan keluar.");
+        } else {
+          // absen keluar
+          await colPresence.doc(todayDocId).update({
+            "keluar": {
+              "date": dateNow.toIso8601String(),
+              "lat": position.latitude,
+              "long": position.longitude,
+              "address": address,
+              "status": statDistance,
+            }
+          });
+        }
+      } else {
+        // abesn masuk
+        await colPresence.doc(todayDocId).set({
+          "date": dateNow.toIso8601String(),
+          "masuk": {
+            "date": dateNow.toIso8601String(),
+            "lat": position.latitude,
+            "long": position.longitude,
+            "address": address,
+            "status": statDistance,
+          }
+        });
+      }
     }
   }
 
