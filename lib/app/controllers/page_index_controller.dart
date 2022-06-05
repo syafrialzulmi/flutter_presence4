@@ -80,6 +80,7 @@ class PageIndexController extends GetxController {
           "long": position.longitude,
           "address": address,
           "status": statDistance,
+          "distance": distance,
         }
       });
     } else {
@@ -103,6 +104,7 @@ class PageIndexController extends GetxController {
               "long": position.longitude,
               "address": address,
               "status": statDistance,
+              "distance": distance,
             }
           });
         }
@@ -116,6 +118,7 @@ class PageIndexController extends GetxController {
             "long": position.longitude,
             "address": address,
             "status": statDistance,
+            "distance": distance
           }
         });
       }
